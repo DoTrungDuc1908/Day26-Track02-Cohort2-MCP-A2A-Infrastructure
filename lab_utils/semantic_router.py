@@ -57,10 +57,28 @@ class SemanticRouter:
     def route_with_fallback(
         self,
         request: str,
-        fallback: str = "orchestrator",
+        fallback: str | list[str] = "orchestrator",
     ) -> str:
         candidates = self.route(request, top_k=1)
         if not candidates:
+            if isinstance(fallback, list):
+                return fallback[-1] if fallback else "orchestrator"
             return fallback
         name, score = candidates[0]
-        return name if score >= self.threshold else fallback
+        if score >= self.threshold:
+            return name
+        
+        if isinstance(fallback, list):
+            # Nếu fallback là danh sách, đi theo chuỗi fallback có thứ tự
+            # Trả về agent đầu tiên trong chuỗi fallback có độ tương đồng > 0
+            # Nếu không có ai > 0, trả về phần tử cuối cùng của chuỗi làm fallback mặc định
+            scores = dict(self.route(request, top_k=len(self.agents)))
+            for agent_name in fallback[:-1]:
+                if scores.get(agent_name, 0.0) > 0.0:
+                    return agent_name
+            return fallback[-1] if fallback else "orchestrator"
+        return fallback
+
+    def route_with_chain(self, request: str, chain: list[str]) -> str:
+        """Thử route chính; nếu điểm < ngưỡng, đi theo chuỗi fallback."""
+        return self.route_with_fallback(request, fallback=chain)

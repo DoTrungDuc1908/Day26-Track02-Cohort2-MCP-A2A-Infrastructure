@@ -25,4 +25,4 @@ echo "  Dừng A2A: bash scripts/stop_a2a_servers.sh"
 echo "══════════════════════════════════════════════════════════"
 echo ""
 
-exec "$LAB_ADK" web agents/orchestrator "$@"
+exec "$LAB_PYTHON" -m google.adk.cli web agents/orchestrator "$@"

@@ -18,4 +18,4 @@ echo "→ ADK Web UI: http://localhost:8000"
 echo "  Agent: $AGENT_DIR"
 echo "  (Cần A2A servers :8001, :8002 và :8003 đang chạy)"
 
-exec "$LAB_ADK" web "$AGENT_DIR" "$@"
+exec "$LAB_PYTHON" -m google.adk.cli web "$AGENT_DIR" "$@"

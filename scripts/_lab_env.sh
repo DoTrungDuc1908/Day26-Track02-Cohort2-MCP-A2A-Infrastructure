@@ -24,6 +24,14 @@ resolve_lab_python() {
   local root="${1:-.}"
   local c candidates=()
 
+  # Windows Python 3.12 candidates
+  if [[ -x "/c/Program Files/Python312/python.exe" ]]; then
+    candidates+=("/c/Program Files/Python312/python.exe")
+  fi
+  if [[ -x "/c/Program Files/Python312/python" ]]; then
+    candidates+=("/c/Program Files/Python312/python")
+  fi
+
   # Ưu tiên conda (pii-env) — lab không dùng .venv
   if [[ -n "${CONDA_PREFIX:-}" && -x "${CONDA_PREFIX}/bin/python" ]]; then
     candidates+=("${CONDA_PREFIX}/bin/python")
@@ -60,6 +68,14 @@ setup_lab_env() {
   LAB_UVICORN=("$LAB_PYTHON" -m uvicorn)
   if [[ -x "$LAB_BIN/adk" ]]; then
     LAB_ADK="$LAB_BIN/adk"
+  elif [[ -x "$LAB_BIN/Scripts/adk.exe" ]]; then
+    LAB_ADK="$LAB_BIN/Scripts/adk.exe"
+  elif [[ -x "$LAB_BIN/Scripts/adk" ]]; then
+    LAB_ADK="$LAB_BIN/Scripts/adk"
+  elif [[ -x "/c/Users/admin/AppData/Roaming/Python/Python312/Scripts/adk.exe" ]]; then
+    LAB_ADK="/c/Users/admin/AppData/Roaming/Python/Python312/Scripts/adk.exe"
+  elif [[ -x "/c/Users/admin/AppData/Roaming/Python/Python312/Scripts/adk" ]]; then
+    LAB_ADK="/c/Users/admin/AppData/Roaming/Python/Python312/Scripts/adk"
   elif command -v adk >/dev/null 2>&1; then
     LAB_ADK="$(command -v adk)"
   else
